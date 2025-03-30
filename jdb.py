@@ -26,8 +26,8 @@ class Database:
                 self.lock.release()
 
     # gets a key or a list of keys
-    def get(self, keys: str | list[str]):
-        data = self.load()
+    def get(self, keys: str | list[str], data=None):
+        data = self.load() if not data else data
         if isinstance(keys, str):
             return data[keys]
         else:
@@ -39,12 +39,12 @@ class Database:
             return eval(expression)
 
     # sets a key or a list of keys
-    def set(self, keys: str | list[str], value):
-        data = self.load()
+    def set(self, keys: str | list[str], value, data=None):
+        data = self.load() if not data else data
         if isinstance(keys, str):
             data[keys] = value
         else:
-            # see line 24
+            # see line 37
             expression = f"""data{"".join([f"['{k}']" for k in keys])} = {f"'{value}'" if isinstance(value, str) else value}"""
             exec(expression)
         self.save(data)
@@ -56,13 +56,13 @@ class Database:
         self.set(keys, val)
 
     # deletes the value of a key or a list of keys
-    def delete(self, keys: str | list[str]):
-        data = self.load()
+    def delete(self, keys: str | list[str], data=None):
+        data = self.load() if not data else data
         deleted_data = self.get(keys)
         if isinstance(keys, str):
             del data[keys]
         else:
-            # see line 24
+            # see line 37
             expression = f"""del data{"".join([f"['{k}']" for k in keys])}"""
             exec(expression)
         self.save(data)
